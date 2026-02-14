@@ -15,8 +15,9 @@ public class User {
 
     private String password;
 
-    @Column(name = "plan")
-    private String plan = "FREE";
+    private String plan; // FREE, PRO, ENTERPRISE
+
+    // Getters and Setters
 
     public Long getId() { return id; }
 

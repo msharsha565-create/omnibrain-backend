@@ -1,12 +1,9 @@
 package com.omnibrain.service;
 
-import com.omnibrain.ai.AiProviderFactory;
 import com.omnibrain.entity.AiUsage;
 import com.omnibrain.entity.User;
 import com.omnibrain.repository.AiUsageRepository;
 import com.omnibrain.repository.UserRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,44 +12,39 @@ import java.time.LocalDateTime;
 @Service
 public class AiService {
 
-    private final AiProviderFactory providerFactory;
     private final AiUsageRepository usageRepository;
     private final UserRepository userRepository;
 
     public AiService(
-            AiProviderFactory providerFactory,
             AiUsageRepository usageRepository,
             UserRepository userRepository
     ) {
-        this.providerFactory = providerFactory;
         this.usageRepository = usageRepository;
         this.userRepository = userRepository;
     }
 
     public String chat(String prompt) {
 
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
         String userId = "anonymous";
 
-        if (authentication != null && authentication.isAuthenticated()) {
-            userId = authentication.getName();
-        }
+        // Auto-create anonymous user if not exists
+        User user = userRepository.findByUsername(userId)
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setUsername(userId);
+                    newUser.setPassword("dev");
+                    newUser.setPlan("FREE");
+                    return userRepository.save(newUser);
+                });
 
-        // 🔹 Get today's usage
+        // Count today's usage
         long todayCount =
                 usageRepository.countByUserIdAndCreatedAtAfter(
                         userId,
                         LocalDate.now().atStartOfDay()
                 );
 
-        // 🔹 Get user plan
-        String plan = userRepository.findByUsername(userId)
-                .map(User::getPlan)
-                .orElse("FREE");
-
-        long limit = switch (plan) {
+        long limit = switch (user.getPlan()) {
             case "PRO" -> 100;
             case "ENTERPRISE" -> Long.MAX_VALUE;
             default -> 5;
@@ -60,22 +52,17 @@ public class AiService {
 
         if (todayCount >= limit) {
             return "🚫 Daily limit reached for plan: "
-                    + plan + ". Upgrade to continue.";
+                    + user.getPlan() + ". Upgrade to continue.";
         }
 
-        // 🔹 Call AI provider
-        String response =
-                providerFactory.getProvider().chat(prompt);
+        // 🔥 Replace this with real OpenAI call later
+        String response = "AI Response: " + prompt;
 
-        // 🔹 Save usage
+        // Save usage
         AiUsage usage = new AiUsage();
         usage.setUserId(userId);
         usage.setPrompt(prompt);
-        usage.setProvider(
-    providerFactory.getProvider().getClass().getSimpleName()
-);
-
-
+        usage.setProvider("mock");
         usageRepository.save(usage);
 
         return response;

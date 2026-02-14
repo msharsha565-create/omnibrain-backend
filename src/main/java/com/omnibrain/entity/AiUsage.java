@@ -20,6 +20,8 @@ public class AiUsage {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // Getters and Setters
+
     public Long getId() { return id; }
 
     public String getUserId() { return userId; }

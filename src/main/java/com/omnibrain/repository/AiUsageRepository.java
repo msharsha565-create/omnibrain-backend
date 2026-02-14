@@ -1,11 +1,11 @@
 package com.omnibrain.repository;
 
-import com.omnibrain.entity.AiUsage;
+import com.omnibrain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.time.LocalDateTime;
+import java.util.Optional;
 
-public interface AiUsageRepository extends JpaRepository<AiUsage, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    long countByUserIdAndCreatedAtAfter(String userId, LocalDateTime time);
+    Optional<User> findByUsername(String username);
 }
