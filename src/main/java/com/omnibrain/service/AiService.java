@@ -71,7 +71,10 @@ public class AiService {
         AiUsage usage = new AiUsage();
         usage.setUserId(userId);
         usage.setPrompt(prompt);
-        usage.setProvider("mock");
+        usage.setProvider(
+    providerFactory.getProvider().getClass().getSimpleName()
+);
+
 
         usageRepository.save(usage);
 
