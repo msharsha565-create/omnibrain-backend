@@ -1,0 +1,3 @@
+OmniBrain is a retrieval-augmented AI platform.
+It allows users to upload documents, generate embeddings,
+and ask questions using contextual reasoning.

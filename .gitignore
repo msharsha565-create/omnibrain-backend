@@ -1,0 +1,32 @@
+
+
+# Build
+target/
+
+# Logs
+*.log
+
+# Local databases
+*.db
+*.mv.db
+*.trace.db
+
+# Environment
+.env
+
+# OS junk
+Thumbs.db
+.DS_Store
+
+# Random test files
+-d
+-H
+cd
+rd
+curl
+curl.exe
+mvn
+[Help
+
+# Node
+node_modules/
