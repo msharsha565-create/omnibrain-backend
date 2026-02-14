@@ -8,24 +8,22 @@ public class AiProviderFactory {
 
     private final OpenAiProvider openAiProvider;
     private final MockAiProvider mockAiProvider;
-    private final String apiKey;
+
+    @Value("${OPENAI_API_KEY:}")
+    private String apiKey;
 
     public AiProviderFactory(
             OpenAiProvider openAiProvider,
-            MockAiProvider mockAiProvider,
-            @Value("${OPENAI_API_KEY:}") String apiKey
+            MockAiProvider mockAiProvider
     ) {
         this.openAiProvider = openAiProvider;
         this.mockAiProvider = mockAiProvider;
-        this.apiKey = apiKey;
     }
 
     public AiProvider getProvider() {
-
-        if (apiKey == null || apiKey.isBlank()) {
-            return mockAiProvider;
+        if (apiKey != null && !apiKey.isBlank()) {
+            return openAiProvider;
         }
-
-        return openAiProvider;
+        return mockAiProvider;
     }
 }
