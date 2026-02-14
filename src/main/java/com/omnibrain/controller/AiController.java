@@ -14,10 +14,13 @@ public class AiController {
     public AiController(AiService aiService) {
         this.aiService = aiService;
     }
+@GetMapping("/chat")
+public String test() {
+    return "Backend is alive. Use POST to chat.";
+}
 
     @PostMapping("/chat")
-    public ChatResponse chat(@RequestBody ChatRequest request) {
-        String reply = aiService.chat(request.getPrompt());
-        return new ChatResponse(reply);
+    public String chat(@RequestBody Map<String, String> body) {
+        return aiService.chat(body.get("prompt"));
     }
 }
