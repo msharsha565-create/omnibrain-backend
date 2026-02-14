@@ -6,8 +6,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HealthController {
 
+    @GetMapping("/")
+    public String root() {
+        return "OmniBrain Backend Running 🚀";
+    }
+
     @GetMapping("/api/health")
     public String health() {
-        return "Omnibrain backend running";
+        return "Healthy ✅";
     }
 }
