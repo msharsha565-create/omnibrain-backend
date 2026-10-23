@@ -1,5 +1,5 @@
-// LOCKED VERSION — DO NOT MODIFY
-// Verified end-to-end: upload → embed → persist → retrieve → answer
+// PLACEHOLDER "LLM": ignores the prompt and streams one fixed sentence. Replace with a real
+// model client (for example the OpenAI provider in com.omnibrain.ai) to answer from the context.
 
 package com.omnibrain.rag;
 

@@ -1,5 +1,6 @@
-// LOCKED VERSION — DO NOT MODIFY
-// Verified end-to-end: upload → embed → persist → retrieve → answer
+// PLACEHOLDER embedder: a pseudo-random vector derived from the text's hash. Identical text gets
+// an identical vector, but similar text does NOT get similar vectors, so retrieval ranking is
+// effectively arbitrary. Replace with a real embedding model before relying on results.
 
 package com.omnibrain.rag;
 

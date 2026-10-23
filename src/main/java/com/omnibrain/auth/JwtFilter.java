@@ -5,21 +5,29 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
-@Component
+/**
+ * Authenticates requests that carry a valid {@code Authorization: Bearer <jwt>} header.
+ * Registered explicitly in {@code SecurityConfig} (not a @Component, so it runs once, inside
+ * the security filter chain).
+ */
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final Set<String> adminUsers;
 
-    public JwtFilter(JwtUtil jwtUtil) {
+    public JwtFilter(JwtUtil jwtUtil, Set<String> adminUsers) {
         this.jwtUtil = jwtUtil;
+        this.adminUsers = adminUsers;
     }
 
     @Override
@@ -32,20 +40,16 @@ public class JwtFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
-
-            if (jwtUtil.validateToken(token)) {
-                String username = jwtUtil.extractUsername(token);
-
+            jwtUtil.parseUsername(header.substring(7)).ifPresent(username -> {
+                List<GrantedAuthority> authorities = adminUsers.contains(username)
+                        ? List.of(new SimpleGrantedAuthority("ROLE_USER"),
+                                  new SimpleGrantedAuthority("ROLE_ADMIN"))
+                        : List.of(new SimpleGrantedAuthority("ROLE_USER"));
                 UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                username, null, Collections.emptyList());
-
-                auth.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request));
-
+                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            }
+            });
         }
 
         filterChain.doFilter(request, response);

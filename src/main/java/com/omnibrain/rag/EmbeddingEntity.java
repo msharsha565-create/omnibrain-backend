@@ -1,5 +1,3 @@
-// LOCKED VERSION — DO NOT MODIFY
-// Verified end-to-end: upload → embed → persist → retrieve → answer
 
 package com.omnibrain.rag;
 
@@ -21,7 +19,6 @@ public class EmbeddingEntity {
     @Lob
     private String text;
 
-    // ✅ THIS FIELD WAS MISSING
     private String source;
 
     protected EmbeddingEntity() {
@@ -47,7 +44,6 @@ public class EmbeddingEntity {
         return text;
     }
 
-    // ✅ NOW THIS WORKS
     public String getSource() {
         return source;
     }

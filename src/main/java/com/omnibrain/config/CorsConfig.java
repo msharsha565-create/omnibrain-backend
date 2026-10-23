@@ -1,4 +1,4 @@
-package com.omnibrain.backend.config;
+package com.omnibrain.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,5 +1,3 @@
-// LOCKED VERSION — DO NOT MODIFY
-// Verified end-to-end: upload → embed → persist → retrieve → answer
 
 package com.omnibrain.rag;
 
@@ -106,12 +104,8 @@ Answer:
 
                 String finalAnswer = answerBuilder.toString().trim();
 
-                // Rule-based correction (safe)
-                if (question.toLowerCase().contains("file type")) {
-                    finalAnswer = "Text and PDF files.";
-                }
-
-                // Step 9: confidence
+                // Confidence is the cosine similarity of the best chunk. It is only meaningful
+                // once SimpleEmbedder is replaced with a real embedding model.
                 double similarity = cosineSimilarity(results.get(0).getVector(), qVec);
                 String confidenceLabel =
                         similarity >= 0.85 ? "High" :

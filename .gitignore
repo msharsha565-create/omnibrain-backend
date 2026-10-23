@@ -1,32 +1,29 @@
 
-
 # Build
-target/
-
-# Logs
-*.log
-
+# Environment
 # Local databases
+# Logs
+# Node
+# OS junk
+# Random test files
 *.db
+*.iml
+*.log
 *.mv.db
 *.trace.db
-
-# Environment
-.env
-
-# OS junk
-Thumbs.db
-.DS_Store
-
-# Random test files
--d
 -H
+-d
+.DS_Store
+.env
+.idea/
+.vscode/
+Thumbs.db
+[Help
 cd
-rd
+cookies.txt
 curl
 curl.exe
 mvn
-[Help
-
-# Node
 node_modules/
+rd
+target/
