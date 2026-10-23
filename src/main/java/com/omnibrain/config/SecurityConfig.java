@@ -2,6 +2,7 @@ package com.omnibrain.config;
 
 import com.omnibrain.auth.JwtFilter;
 import com.omnibrain.auth.JwtUtil;
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +49,9 @@ public class SecurityConfig {
             .exceptionHandling(e -> e.authenticationEntryPoint(
                     new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
             .authorizeHttpRequests(auth -> auth
+                // The container's error-page dispatch (after sendError) runs the chain again without the
+                // JWT. Without this, every 400/403/415 is rewritten to 401 on a real server.
+                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                 .requestMatchers("/", "/api/health", "/api/status", "/auth/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()

@@ -15,11 +15,17 @@ public class OpenAiProvider implements AiProvider {
     private final RestClient restClient;
     private final String apiKey;
 
-    public OpenAiProvider(@Value("${OPENAI_API_KEY:}") String apiKey) {
-        this.apiKey = apiKey;
+    private final String model;
 
+    public OpenAiProvider(
+            @Value("${OPENAI_API_KEY:}") String apiKey,
+            @Value("${OPENAI_BASE_URL:https://api.openai.com/v1}") String baseUrl,
+            @Value("${OPENAI_MODEL:gpt-4o-mini}") String model
+    ) {
+        this.apiKey = apiKey;
+        this.model = model;
         this.restClient = RestClient.builder()
-                .baseUrl("https://api.openai.com/v1")
+                .baseUrl(baseUrl)
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
@@ -33,7 +39,7 @@ public class OpenAiProvider implements AiProvider {
         }
 
         Map<String, Object> requestBody = Map.of(
-                "model", "gpt-4o-mini",
+                "model", model,
                 "messages", List.of(
                         Map.of("role", "user", "content", prompt)
                 )

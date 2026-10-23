@@ -30,6 +30,16 @@ public class JwtFilter extends OncePerRequestFilter {
         this.adminUsers = adminUsers;
     }
 
+    /**
+     * Streaming (SSE) responses finish with an ASYNC dispatch that passes through the security chain
+     * again. By default OncePerRequestFilter skips it, which would leave that pass unauthenticated and
+     * make Spring Security reject the end of every stream.
+     */
+    @Override
+    protected boolean shouldNotFilterAsyncDispatch() {
+        return false;
+    }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
