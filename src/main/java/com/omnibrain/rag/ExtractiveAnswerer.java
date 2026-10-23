@@ -26,7 +26,7 @@ public class ExtractiveAnswerer implements AnswerGenerator {
         return Math.max(1, (int) Math.ceil(questionTerms * 0.5));
     }
 
-    private record Candidate(int hit, int order, String sentence, double score) {}
+    private record Candidate(int hit, int order, String sentence, String next, double score) {}
 
     @Override
     public Optional<String> answer(String question, List<Hit> hits) {
@@ -45,7 +45,8 @@ public class ExtractiveAnswerer implements AnswerGenerator {
                 int matched = matched(terms, Text.tokens(sentences.get(s)));
                 if (matched >= 1) {
                     // Tie-break toward higher-ranked passages.
-                    candidates.add(new Candidate(h, s, sentences.get(s), matched + 0.1 * hits.get(h).score()));
+                    String next = s + 1 < sentences.size() ? sentences.get(s + 1) : null;
+                    candidates.add(new Candidate(h, s, sentences.get(s), next, matched + 0.1 * hits.get(h).score()));
                 }
             }
         }
@@ -60,6 +61,11 @@ public class ExtractiveAnswerer implements AnswerGenerator {
         for (Candidate c : best) {
             if (out.length() > 0) out.append(' ');
             out.append(c.sentence()).append(" [").append(c.hit() + 1).append(']');
+            // FAQ-style text: a quoted question is useless without the answer that follows it.
+            if (c.sentence().endsWith("?") && c.next() != null && best.stream().noneMatch(
+                    o -> o.hit() == c.hit() && o.order() == c.order() + 1)) {
+                out.append(' ').append(c.next()).append(" [").append(c.hit() + 1).append(']');
+            }
         }
         return Optional.of(out.toString());
     }

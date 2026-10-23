@@ -74,4 +74,22 @@ class ExtractiveAnswererTest {
         String answer = answerer.answer("solar panels", List.of(new Hit("x", "d", text, 0.5))).orElseThrow();
         assertTrue(answer.split("\\[1\\]", -1).length - 1 <= ExtractiveAnswerer.MAX_SENTENCES);
     }
+
+    @Test
+    void aQuotedQuestionBringsItsAnswerAlong() {
+        String faq = "FAQ Q: What file types are supported? A: Text and PDF files. "
+                + "Q: How are answers generated? A: Using context from uploaded documents with citations.";
+        String answer = answerer.answer("How are answers generated?", List.of(new Hit("f", "faq.pdf", faq, 0.4))).orElseThrow();
+        assertTrue(answer.contains("Using context from uploaded documents with citations."), answer);
+        assertTrue(answer.contains("Q: How are answers generated?"), answer);
+        // the answer to a different FAQ entry is not dragged in
+        assertFalse(answer.contains("Text and PDF files"), answer);
+    }
+
+    @Test
+    void anAnswerSentenceAlreadySelectedIsNotRepeated() {
+        String text = "What is X? X is a thing about solar panels and inverters.";
+        String answer = answerer.answer("what is x solar panels", List.of(new Hit("t", "d", text, 0.5))).orElseThrow();
+        assertEquals(1, answer.split("X is a thing", -1).length - 1, answer);
+    }
 }
